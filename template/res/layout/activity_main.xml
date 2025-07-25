@@ -7,7 +7,13 @@
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/my_text"/>
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/my_text"/>
+
+    <Button
+     android:id="@+id/my_btn"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:text="click me" />
 </LinearLayout>
