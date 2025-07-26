@@ -1,5 +1,6 @@
 SDK="$PWD/android_sdk"
 NDK="$SDK/ndk/26.2.11394342"
+ANDROID_VERSION=34
 
 if [ -d "$SDK" ]; then
 
@@ -21,15 +22,16 @@ else
 fi
 
 echo y | "$SDK/cmdline-tools/bin/sdkmanager" --sdk_root="$SDK" --install \
-      "platforms;android-34" "build-tools;34.0.0" "platform-tools" "ndk;26.2.11394342"
+      "platforms;android-$ANDROID_VERSION" "build-tools;$ANDROID_VERSION.0.0" "platform-tools" "ndk;26.2.11394342"
 
 if [ -f "keystore.jks" ];
 then 
    echo "KEY EXISTS"
 else
+
    keytool -genkeypair \
      -keystore keystore.jks \
-     -alias androidkey \
+     -alias android_key \
      -validity 10000 \
      -keyalg RSA \
      -keysize 2048 \
@@ -41,3 +43,5 @@ fi
 if [ -d "$SDK/ndk/android-ndk-r26c" ]; then
    mv "$SDK/ndk/android-ndk-r26c" "$NDK"
 fi
+
+
