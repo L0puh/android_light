@@ -1,71 +1,51 @@
 #!/bin/bash
+
+source ./config.sh
 set -e
 
-RELEASE=11
-ANDROID_VERSION=33
-NATIVE_LIB="arm64-v8a"
+echo -e "${YELLOW} Packing resources... ${NC}"
 
-SDK="$PWD/android_sdk"
-NDK="$SDK/ndk/26.2.11394342"
-BUILD_TOOLS="$SDK/build-tools/$ANDROID_VERSION.0.0"
-PLATFORM="$SDK/platforms/android-$ANDROID_VERSION"
-
-# paths
-MYAPP="$PWD/myapp"
-SRC="$MYAPP/jni"
-ROOT="$PWD"
-
-
-echo "COPYING TEMPLATE..."
-mkdir -p $MYAPP/build/{gen,obj,apk/lib/$NATIVE_LIB} 
-cp $PWD/template/* $MYAPP -r
-
-echo "COMPILING APPLICATION..."
-
-echo "PACKING..."
 "$BUILD_TOOLS/aapt" package -f -m -J $MYAPP/build/gen/ -S $MYAPP/res \
       -M $MYAPP/AndroidManifest.xml -I "$PLATFORM/android.jar"
 
 cd "$MYAPP/build"
 
 cmake -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
-      -DANDROID_ABI=$NATIVE_LIB \
+      -DANDROID_ABI=$NATIVE_LIB_PLATFORM \
       -DANDROID_PLATFORM=android-$ANDROID_VERSION \
-      "$SRC"
+      "$SRC" 
 
-cmake --build . --target native-lib -- -j$(nproc)
+cmake --build . --target native-lib -- -j$(nproc) 
 
-cd $ROOT 
-mv $MYAPP/build/libnative-lib.so "$MYAPP/build/apk/lib/$NATIVE_LIB/"
+cd "$ROOT"
+mv "$MYAPP/build/libnative-lib.so" "$MYAPP/build/apk/lib/$NATIVE_LIB_PLATFORM/"
 
-echo "compiling java..."
+echo -e "${YELLOW} Compiling Java code... ${NC}"
 
-cd $MYAPP
-javac -h $SRC --release $RELEASE -classpath "$PLATFORM/android.jar" -d \
-    build/obj build/gen/example/myapp/R.java java/example/myapp/MainActivity.java
+cd "$MYAPP"
+echo -e "${BLUE} Generating R.java and compiling Java sources... ${NC}"
+javac -h "$SRC" --release "$RELEASE" -classpath "$PLATFORM/android.jar" -d build/obj build/gen/$FULL_PROJECT_NAME/R.java java/$FULL_PROJECT_NAME/MainActivity.java
 
-echo "creating byte files..."
-"$BUILD_TOOLS/d8" --release --lib "$PLATFORM/android.jar" \
-      --output build/apk/ build/obj/example/myapp/*.class
-cd $ROOT
+echo -e "${BLUE} Creating bytecode files... ${NC}"
+"$BUILD_TOOLS/d8" --release --lib "$PLATFORM/android.jar" --output build/apk/ build/obj/$FULL_PROJECT_NAME/*.class
 
-"$BUILD_TOOLS/aapt" package -f -M $MYAPP/AndroidManifest.xml -S $MYAPP/res/ \
-      -I "$PLATFORM/android.jar" \
-      -F $MYAPP/build/myapp.unsigned.apk $MYAPP/build/apk/
+cd "$ROOT"
+echo -e "${BLUE} Packaging APK... ${NC}"
+"$BUILD_TOOLS/aapt" package -f -M "$MYAPP/AndroidManifest.xml" -S "$MYAPP/res/" -I "$PLATFORM/android.jar" -F "$MYAPP/build/$PROJECT_NAME.unsigned.apk" "$MYAPP/build/apk/"
 
-echo "SIGNING APK..."
+echo -e "${BLUE} Signing APK... ${NC}"
+"$BUILD_TOOLS/zipalign" -f -p 4 "$MYAPP/build/$PROJECT_NAME.unsigned.apk" "$MYAPP/build/$PROJECT_NAME.aligned.apk"
 
-"$BUILD_TOOLS/zipalign" -f -p 4 "$MYAPP/build/myapp.unsigned.apk" "$MYAPP/build/myapp.aligned.apk"
+"$BUILD_TOOLS/apksigner" sign --ks keystore.jks --ks-key-alias android_key --ks-pass pass:android --key-pass pass:android --out "$MYAPP/build/$PROJECT_NAME.apk" "$MYAPP/build/$PROJECT_NAME.aligned.apk"
 
-"$BUILD_TOOLS/apksigner" sign \
-  --ks keystore.jks \
-  --ks-key-alias android_key\
-  --ks-pass pass:android \
-  --key-pass pass:android \
-  --out "$MYAPP/build/myapp.apk" \
-  "$MYAPP/build/myapp.aligned.apk"
+echo -e "${YELLOW}==============================${NC}"
+echo -e "${YELLOW} $PROJECT_NAME is done! Your APK is at: ${NC}"
+echo -e "${YELLOW} $MYAPP/build/$PROJECT_NAME.apk ${NC}"
+echo -e "${YELLOW}==============================${NC}"
 
-echo "DONE. CHECK OUT $MYAPP/build/myapp.apk"
+echo -e "${RED} Installing APK on device..."
+"$SDK/platform-tools/adb" install -r "$MYAPP/build/$PROJECT_NAME.apk" 
 
-"$SDK/platform-tools/adb" install -r $MYAPP/build/myapp.apk
-"$SDK/platform-tools/adb" shell am start -n example.myapp/.MainActivity
+echo -e "Launching app on ${DOMAIN}.${PROJECT_NAME}... ${NC}"
+
+"$SDK/platform-tools/adb" shell am start -n ${DOMAIN}.${PROJECT_NAME}/.MainActivity
