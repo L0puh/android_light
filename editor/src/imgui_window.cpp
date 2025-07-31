@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "imgui.h"
 
 
 namespace imgui {
@@ -7,7 +8,6 @@ namespace imgui {
 
       GLFWwindow* window;
 
-      glfwSetErrorCallback(utils::glfw_error_callback);
       if (!glfwInit()) { 
          error_and_exit("glfw init failed");
       }
@@ -38,8 +38,14 @@ namespace imgui {
       ImGui_ImplGlfw_InitForOpenGL(window, true);
       ImGui_ImplOpenGL3_Init();
 
+      glfwSetKeyCallback(window, utils::key_callback);
+      glfwSetErrorCallback(utils::glfw_error_callback);
+      glfwSetFramebufferSizeCallback(window, utils::framebuffer_callback);
+
       return window;
    }
+
+
 
    void cleanup(GLFWwindow* window) {
       ImGui_ImplOpenGL3_Shutdown();
@@ -59,12 +65,6 @@ namespace imgui {
    }
    void render(GLFWwindow* window, ImVec4 clear_color) {
       ImGui::Render();
-      int display_w, display_h;
-
-      // FIXME 
-      glfwGetFramebufferSize(window, &display_w, &display_h);
-      glViewport(0, 0, display_w, display_h);
-
       glClearColor(clear_color.x * clear_color.w, clear_color.y *
             clear_color.w, clear_color.z * clear_color.w, clear_color.w);
       glClear(GL_COLOR_BUFFER_BIT);
