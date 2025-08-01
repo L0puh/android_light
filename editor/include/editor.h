@@ -3,15 +3,22 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <string>
+#include <vector>
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui.h>
-
 #include <GLFW/glfw3.h>
 
 
 #define error_and_exit(msg) { printf("[-] error[%s:%s:%d]%s\n", __FILE__, __func__, __LINE__, msg); exit(-1);}
+
+namespace color {
+   const uint grey  = IM_COL32(50, 50, 50, 255);
+   const uint blue  = IM_COL32(0, 150, 255, 255);
+   const uint white = IM_COL32(200, 200, 200, 255);
+}
 
 namespace imgui {
 
@@ -24,7 +31,18 @@ namespace imgui {
 };
 
 
+struct element_t{
+    std::string id;
+    std::string type;
+    ImVec2 pos;
+};
+
 class Editor {
+   std::vector<element_t> elements; 
+   const ImVec2 phone_size = ImVec2(400, 800);
+
+   int editing_index = -1;
+   
    protected:
       ImGuiWindowFlags window_flags = 
                ImGuiWindowFlags_NoResize |
@@ -49,9 +67,13 @@ class Editor {
       void draw();
 
    private:
+      
       void add_item_popup();
+      void draw_elements(ImVec2 canvas_pos);
       void draw_menu();
-      void draw_workspace();
+      void edit_element();
+      ImVec2 draw_canvas();
+      void add_drag_and_drop(const char* type);
 };
 
 
