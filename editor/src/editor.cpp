@@ -1,12 +1,18 @@
 #include "editor.h"
 #include "imgui.h"
 
+ Editor* Editor::get_instance() {
+   if (instance == NULL) {
+      utils::log_info(ERROR, "init instance of editor before using");
+   }
+   return instance;
+}
 
 void Editor::draw() {
    ImVec2 canvas_pos;
 
    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-   ImGui::Begin("EDITOR", nullptr, window_flags);
+   ImGui::Begin("EDITOR", nullptr, window_flags | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize);
       draw_menu();
       canvas_pos = draw_canvas();
       draw_elements(canvas_pos);

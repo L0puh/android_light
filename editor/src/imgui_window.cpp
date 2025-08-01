@@ -7,9 +7,10 @@ namespace imgui {
    GLFWwindow* init() {
 
       GLFWwindow* window;
+      glfwSetErrorCallback(utils::glfw_error_callback);
 
       if (!glfwInit()) { 
-         error_and_exit("glfw init failed");
+         utils::log_info(ERROR, "glfw init failed");
       }
 
       glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -18,9 +19,9 @@ namespace imgui {
 
       float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
       window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), 
-            "Android editor", nullptr, nullptr);
+                  "Android editor", nullptr, nullptr);
 
-      if (window == NULL) error_and_exit("window init failed");
+      if (window == NULL) utils::log_info(ERROR, "window init failed");
 
       glfwMakeContextCurrent(window);
       glfwSwapInterval(1);
@@ -39,7 +40,6 @@ namespace imgui {
       ImGui_ImplOpenGL3_Init();
 
       glfwSetKeyCallback(window, utils::key_callback);
-      glfwSetErrorCallback(utils::glfw_error_callback);
       glfwSetFramebufferSizeCallback(window, utils::framebuffer_callback);
 
       return window;

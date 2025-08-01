@@ -10,5 +10,3 @@ RED='\e[35m'
 YELLOW='\e[33m'
 BLUE='\e[36m'
 NC='\033[0m' 
-
-   

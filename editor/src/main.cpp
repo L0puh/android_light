@@ -1,15 +1,15 @@
 #include "editor.h"
 
-
 Editor* Editor::instance = new Editor();
 
 int main() {
 
    GLFWwindow* window = imgui::init();
    if (window == NULL) {
-      error_and_exit("init failed");
-   }
-   ImVec4 clear_color = ImVec4(0.573, 0.573, 0.71, 0.5f);
+      utils::log_info(ERROR, "init failed");
+   } else 
+      utils::log_info(INFO, "init window");
+   ImVec4 clear_color = ImVec4(0, 0, 0, 0);
 
    while (!glfwWindowShouldClose(window)){
       glfwPollEvents();

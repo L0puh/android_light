@@ -12,7 +12,6 @@
 #include <GLFW/glfw3.h>
 
 
-#define error_and_exit(msg) { printf("[-] error[%s:%s:%d]%s\n", __FILE__, __func__, __LINE__, msg); exit(-1);}
 
 namespace color {
    const uint grey  = IM_COL32(50, 50, 50, 255);
@@ -54,13 +53,7 @@ class Editor {
       Editor() {}
    public:
 
-      static Editor* get_instance() {
-         if (instance == NULL) {
-            error_and_exit("Init instance of editor");
-         }
-         return instance;
-      }
-
+      static Editor* get_instance();
       void set_flag(ImGuiWindowFlags f) { window_flags |= f; }
       void remove_flag(ImGuiWindowFlags f) { window_flags &= ~f; }
 
@@ -77,7 +70,13 @@ class Editor {
 };
 
 
+enum log_type {
+   INFO,
+   ERROR,
+   WARN
+};
 namespace utils {
+   void log_info(log_type type, const char* format, ...);
    void glfw_error_callback(int error, const char* description);
    void key_callback(GLFWwindow* window, int key, int code, int action, int mods);
    void framebuffer_callback(GLFWwindow* w, int width, int height);
