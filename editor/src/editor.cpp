@@ -1,5 +1,9 @@
 #include "editor.h"
 #include "imgui.h"
+#include <fstream>
+#include <limits>
+#include <string>
+#include <vector>
 
  Editor* Editor::get_instance() {
    if (instance == NULL) {
@@ -40,6 +44,60 @@ void Editor::add_item_popup(){
    }
 }
 
+void Editor::save_file(std::string& filename){
+   std::ofstream ofs(filename);
+   if (ofs.is_open())
+      utils::log_info(INFO, "writing to data to %s", filename.c_str());
+   else {
+      utils::log_info(WARN, "failed to write data to %s", filename.c_str());
+      return;
+   }
+
+   serialize(ofs);
+   ofs.close();
+}
+
+void Editor::create_new_file(){
+   static char buffer[256];
+   if (ImGui::BeginPopup("Create new file")){
+      if (ImGui::InputText("Filename: ", buffer, sizeof(buffer))){
+      }
+      if (ImGui::Button("Ok")){
+         std::string file = (std::string)buffer + ".txt";
+         std::ofstream ofs(file);
+         utils::log_info(INFO, "creating new file %s", file.c_str());
+         ImGui::CloseCurrentPopup();
+      }
+
+      ImGui::EndPopup();
+   }
+         
+}
+
+void Editor::open_file() { 
+   if (ImGuiFileDialog::Instance()->Display("choose file to read", ImGuiWindowFlags_NoCollapse || ImGuiWindowFlags_AlwaysAutoResize, ImVec2(200, 200))) {
+      if (ImGuiFileDialog::Instance()->IsOk()) { 
+         std::string name =  ImGuiFileDialog::Instance()->GetFilePathName();
+         read_file(name);
+      }
+      ImGuiFileDialog::Instance()->Close();
+   }
+   else if (ImGuiFileDialog::Instance()->Display("choose file to write", ImGuiWindowFlags_NoCollapse || ImGuiWindowFlags_AlwaysAutoResize, ImVec2(200, 200))) {
+      if (ImGuiFileDialog::Instance()->IsOk()) { 
+         std::string name = ImGuiFileDialog::Instance()->GetFilePathName();
+         save_file(name);
+      }
+      ImGuiFileDialog::Instance()->Close();
+   }
+}
+void Editor::read_file(std::string& filename){
+   std::ifstream ifs(filename);
+   if (ifs.is_open()) utils::log_info(INFO, "open file to read %s", filename.c_str());
+   else utils::log_info(ERROR, "failed to open file to read %s", filename.c_str());
+
+   elements = deserialize(ifs);
+   ifs.close();
+}
 void Editor::draw_menu(){
 
    ImGui::BeginChild("MENU", ImVec2(0, 0),
@@ -51,9 +109,15 @@ void Editor::draw_menu(){
 
 
    if (ImGui::Button("New")) {
+      ImGui::OpenPopup("Create new file");
+      elements.clear(); //TODO: ask before deleting
+
    }
   
    if (ImGui::Button("Open")) {
+      IGFD::FileDialogConfig config;
+      config.path = ".";
+      ImGuiFileDialog::Instance()->OpenDialog("choose file to read", "Choose File", ".txt", config);
    }
   
    if (ImGui::Button("Add widget")) {
@@ -63,17 +127,22 @@ void Editor::draw_menu(){
    if (ImGui::Button("Delete widget")) {
    }
    if (ImGui::Button("Save xml file")) {
+      IGFD::FileDialogConfig config;
+      config.path = ".";
+      ImGuiFileDialog::Instance()->OpenDialog("choose file to write", "Choose File", ".txt", config);
    }
    if (ImGui::Button("Settings")) {
    }
-
+   
+   create_new_file();
+   open_file();
    add_item_popup();
    ImGui::EndChild();
 
 }
 
 void Editor::edit_element(){
-   ImGui::BeginChild("edit elements");
+   ImGui::BeginChild("MENU");
    
    static char input_buffer[256];
    if (editing_index != -1){
@@ -150,3 +219,30 @@ ImVec2 Editor::draw_canvas(){
    
    return canvas_pos;
 }
+
+
+void Editor::serialize(std::ostream& os){
+   os << elements.size() << "\n";
+   for (const auto& e: elements){
+      os << e.id << "\n" << e.pos.x << " " << e.pos.y << "\n" << e.type << "\n";
+   }
+}
+
+std::vector<element_t> Editor::deserialize(std::istream& is){
+   std::vector<element_t> e;
+   size_t size = 0;
+   is >> size;
+   is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+   for (int i = 0; i < size; i ++){
+      element_t element;
+      std::getline(is, element.id);
+      is >> element.pos.x >> element.pos.y;
+      is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::getline(is, element.type);
+      e.push_back(element);
+   }
+
+   return e;
+}
+
+

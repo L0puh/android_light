@@ -5,17 +5,16 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(libs)
-
 find_package(OpenGL REQUIRED)
+
 set(IMGUI_LIB imgui)
-set(IMGUI_INCLUDE ${CMAKE_CURRENT_SOURE_DIR}/libs/imgui)
-set(INCLUDE_DIR include)
 set(OPENGL_LIB OpenGL::GL)
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+set(IMGUI_INCLUDE ${CMAKE_CURRENT_SOURE_DIR}/libs/imgui)
+set(INCLUDE_DIR include)
+
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp) 
 add_executable(editor ${SOURCES})
-
-
 
 target_link_libraries(editor PRIVATE
     ${IMGUI_LIB}

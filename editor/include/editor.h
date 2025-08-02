@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <istream>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,8 @@
 #include <imgui.h>
 #include <GLFW/glfw3.h>
 
-
+#include <ImGuiFileDialog.h>
+#include <ImGuiFileDialogConfig.h>
 
 namespace color {
    const uint grey  = IM_COL32(50, 50, 50, 255);
@@ -37,6 +39,7 @@ struct element_t{
 };
 
 class Editor {
+
    std::vector<element_t> elements; 
    const ImVec2 phone_size = ImVec2(400, 800);
 
@@ -61,12 +64,19 @@ class Editor {
 
    private:
       
+      void serialize(std::ostream& os);
+      std::vector<element_t> deserialize(std::istream& is);
       void add_item_popup();
       void draw_elements(ImVec2 canvas_pos);
       void draw_menu();
       void edit_element();
       ImVec2 draw_canvas();
       void add_drag_and_drop(const char* type);
+
+      void save_file(std::string& filename);
+      void read_file(std::string& filename);
+      void open_file();
+      void create_new_file();
 };
 
 
