@@ -4,3 +4,6 @@
 [submodule "editor/libs/ImGuiFileDialog"]
 	path = editor/libs/ImGuiFileDialog
 	url = https://github.com/aiekick/ImGuiFileDialog
+[submodule "editor/libs/tinyxml2"]
+	path = editor/libs/tinyxml2
+	url = https://github.com/leethomason/tinyxml2.git

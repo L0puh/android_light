@@ -5,13 +5,16 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(libs)
+add_subdirectory(libs/tinyxml2)
 find_package(OpenGL REQUIRED)
 
 set(IMGUI_LIB imgui)
 set(OPENGL_LIB OpenGL::GL)
+set(TinyXML_LIB tinyxml2)
 
 set(IMGUI_INCLUDE ${CMAKE_CURRENT_SOURE_DIR}/libs/imgui)
 set(INCLUDE_DIR include)
+set(TinyXML_INCLUDE ${CMAKE_CURRENT_SOURE_DIR}/libs/tinyxml2)
 
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp) 
 add_executable(editor ${SOURCES})
@@ -21,10 +24,12 @@ target_link_libraries(editor PRIVATE
     ${GLFW_LIB}
     ${GLAD_LIB}
     ${OPENGL_LIB}
+    ${TinyXML_LIB}
 )
 
 target_include_directories(editor PRIVATE
    ${INCLUDE_DIR}
    ${IMGUI_INCLUDE_DIR}
+   ${TinyXML_INCLUDE}
 
 )

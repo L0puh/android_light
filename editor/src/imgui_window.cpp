@@ -39,10 +39,20 @@ namespace imgui {
       ImGui_ImplGlfw_InitForOpenGL(window, true);
       ImGui_ImplOpenGL3_Init();
 
-      glfwSetKeyCallback(window, utils::key_callback);
+      // takes ownership for InputText widget -> bugs
+      // glfwSetKeyCallback(window, utils::key_callback); 
+      
       glfwSetFramebufferSizeCallback(window, utils::framebuffer_callback);
 
       return window;
+   }
+
+
+   void handle_keys(GLFWwindow* window){
+      if (ImGui::IsKeyDown(ImGuiKey_Q)){
+         glfwSetWindowShouldClose(window, true);
+         return;
+      }
    }
 
 

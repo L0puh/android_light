@@ -3,7 +3,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <istream>
 #include <string>
 #include <vector>
 
@@ -14,6 +13,8 @@
 
 #include <ImGuiFileDialog.h>
 #include <ImGuiFileDialogConfig.h>
+
+
 
 namespace color {
    const uint grey  = IM_COL32(50, 50, 50, 255);
@@ -27,23 +28,24 @@ namespace imgui {
    void cleanup(GLFWwindow* window);
    void render(GLFWwindow* window, ImVec4 clear_color);
    void new_frame();
-
-
+   void handle_keys(GLFWwindow* window);
 };
 
 
 struct element_t{
     std::string id;
     std::string type;
+    std::string text="";
     ImVec2 pos;
 };
 
 class Editor {
 
    std::vector<element_t> elements; 
-   const ImVec2 phone_size = ImVec2(400, 800);
+   const ImVec2 phone_size = ImVec2(420, 934);
 
    int editing_index = -1;
+   ImVec2 canvas_pos;
    
    protected:
       ImGuiWindowFlags window_flags = 
@@ -61,13 +63,12 @@ class Editor {
       void remove_flag(ImGuiWindowFlags f) { window_flags &= ~f; }
 
       void draw();
+      const ImVec2 get_phone_size() { return phone_size; }
 
    private:
       
-      void serialize(std::ostream& os);
-      std::vector<element_t> deserialize(std::istream& is);
       void add_item_popup();
-      void draw_elements(ImVec2 canvas_pos);
+      void draw_elements();
       void draw_menu();
       void edit_element();
       ImVec2 draw_canvas();
@@ -79,6 +80,8 @@ class Editor {
       void create_new_file();
 };
 
+
+void serialize_xml(const std::vector<element_t> data, std::string& filename);
 
 enum log_type {
    INFO,
