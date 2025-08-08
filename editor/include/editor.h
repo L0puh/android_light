@@ -32,12 +32,45 @@ namespace imgui {
 };
 
 
+struct linear_attr_t {
+   std::string width;
+   std::string height;
+   std::string margin;
+
+   int width_int  = -1;
+   int height_int = -1;
+   int margin_int = 0;
+};
+struct attributes_t {
+   linear_attr_t linear;
+};
+
 struct element_t{
     std::string id;
     std::string type;
     std::string text="";
+    std::string background;
     ImVec2 pos;
+    attributes_t attr;
 };
+
+enum layout_type {
+   linear_layout,
+   relative_layout,
+   constraint_layout,
+   frame_layout
+  //TODO: add more... 
+};
+
+
+struct layout_t {
+   std::string orientation = "vertical";
+   std::string width = "match_parent";
+   std::string height= "match_parent";
+   std::string gravity="center";
+   std::string background="white";
+};
+
 
 class Editor {
 
@@ -46,6 +79,9 @@ class Editor {
 
    int editing_index = -1;
    ImVec2 canvas_pos;
+   int current_layout = linear_layout;
+   
+   layout_t layout_settings;
    
    protected:
       ImGuiWindowFlags window_flags = 
@@ -66,7 +102,7 @@ class Editor {
       const ImVec2 get_phone_size() { return phone_size; }
 
    private:
-      
+     /* MENU */ 
       void add_item_popup();
       void draw_elements();
       void draw_menu();
@@ -74,10 +110,22 @@ class Editor {
       ImVec2 draw_canvas();
       void add_drag_and_drop(const char* type);
 
+
+   private:
+      /* FILES */
       void save_file(std::string& filename);
       void read_file(std::string& filename);
       void open_file();
       void create_new_file();
+
+   private:
+      /* LAYOUTS */
+      void layout_menu();
+      void edit_window_layout();
+      void edit_item_linear_layout();
+      void edit_item_relative_layout();
+      void edit_item_contraint_layout();
+      void edit_item_frame_layout();
 };
 
 

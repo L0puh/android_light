@@ -70,6 +70,7 @@ void Editor::draw_menu(){
    create_new_file();
    open_file();
    add_item_popup();
+   layout_menu();
    ImGui::EndChild();
 
 }
@@ -82,8 +83,21 @@ void Editor::draw_elements(){
    int indx = 0;
    for (auto& el : elements) {
       ImVec2 pos = ImVec2(canvas_pos.x + el.pos.x, canvas_pos.y + el.pos.y);
-      ImVec2 text_size = ImGui::CalcTextSize(el.text.c_str());
-      ImVec2 rect_end = ImVec2(pos.x + text_size.x + 9.0f, pos.y + 40);
+      ImVec2 text_size, margin = {0, 0};
+      if (current_layout == layout_type::linear_layout &&
+            el.attr.linear.width_int != -1 && 
+            el.attr.linear.height_int != -1){
+         text_size = ImVec2(el.attr.linear.height_int, el.attr.linear.width_int);
+      } else 
+         text_size = ImGui::CalcTextSize(el.text.c_str());
+
+      if (current_layout == layout_type::linear_layout){
+         margin = ImVec2(el.attr.linear.margin_int, el.attr.linear.margin_int);
+         pos.x += margin.x;
+         pos.y += margin.y;
+      }
+
+      ImVec2 rect_end = ImVec2(pos.x + text_size.x + 9.0f, pos.y + text_size.y * 3.0f);
 
       draw_list->AddRectFilled(pos, rect_end, color::blue, 1.0f);
       draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(),
@@ -100,6 +114,29 @@ void Editor::draw_elements(){
    }
 }
 
+
+void Editor::layout_menu(){
+   const char* l[] = { "linear", "relative", "constraint", "frame"};
+
+   ImGui::SeparatorText("Layout attributes");
+   edit_window_layout();
+   ImGui::Combo("layout", &current_layout, l, IM_ARRAYSIZE(l));
+
+   switch((layout_type)current_layout){
+      case linear_layout:
+         edit_item_linear_layout();
+         break;
+      case relative_layout:
+         edit_item_relative_layout();
+         break;
+      case constraint_layout:
+         edit_item_contraint_layout();
+         break;
+      case frame_layout:
+         edit_item_frame_layout();
+         break;
+   }
+}
 
 ImVec2 Editor::draw_canvas(){
    ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -122,13 +159,13 @@ ImVec2 Editor::draw_canvas(){
 
    if (ImGui::BeginDragDropTarget()){
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TextView")){
-         elements.push_back({"my_id", "TextView", "text", mouse_pos});
+         elements.push_back({"my_id", "TextView", "white", "text", mouse_pos});
       }
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Button")){
-         elements.push_back({"my_id", "Button", "button", mouse_pos});
+         elements.push_back({"my_id", "Button", "button", "white", mouse_pos});
       }
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INPUT")){
-         elements.push_back({"my_id", "INPUT", "input", mouse_pos});
+         elements.push_back({"my_id", "INPUT", "input", "white", mouse_pos});
       }
       ImGui::EndDragDropTarget();
    }

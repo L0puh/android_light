@@ -74,7 +74,13 @@ void Editor::edit_element(){
    static char id_buffer[256];
    static bool is_moving = false, dragging = false;
    if (editing_index != -1){
-      ImGui::Checkbox("is moving", &is_moving);
+      // FIXME: based on current layout
+      // i.e for relative: add siblings
+      // for constraint: add parents 
+      // for frame: fixed coordinates
+      if (current_layout == frame_layout)
+         ImGui::Checkbox("is moving", &is_moving);
+
       if(ImGui::InputText("edit id", id_buffer, IM_ARRAYSIZE(input_buffer))){
          elements[editing_index].id = id_buffer;
       }
