@@ -49,7 +49,7 @@ void Editor::edit_item_linear_layout(){
 void Editor::edit_window_layout(){
    const char* orients[] = {"horizontal", "vertical"};
    const char* gravity[] = {"center", "center_vertical",
-      "center_horizontal", "fill", "top", "bottom", "start", "end"};
+      "center_horizontal", "top", "bottom"};
    static int orientation_indx = 0, gravity_indx = 0;
    layout_t layout;
    ImGui::Combo("orientation", &orientation_indx, orients, IM_ARRAYSIZE(orients));

@@ -74,27 +74,61 @@ void Editor::draw_menu(){
    ImGui::EndChild();
 
 }
+
+ImVec2 Editor::get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canvas_pos){
+   ImVec2 pos = canvas_pos;
+   if (type == "center"){
+      pos.x += (phone_size.x - text_size.x) / 2.0f;
+      pos.y += (phone_size.y - text_size.y) / 2.0f;
+      return pos;
+   }
+   if (type == "center_vertical"){
+      pos.y += (phone_size.y - text_size.y) / 2.0f;
+      return pos;
+   }
+   if (type == "center_horizontal"){
+      pos.x += (phone_size.x - text_size.x) / 2.0f;
+      return pos;
+   }
+   if (type == "top"){
+      return pos;
+   }
+   if (type == "bottom"){
+      pos.y = canvas_pos.y + phone_size.y - text_size.y - 10.0f;
+      return pos;
+   }
+   return pos;
+}
+
 void Editor::draw_elements(){
    ImDrawList* draw_list = ImGui::GetWindowDrawList();
    ImVec2 mouse_pos = ImGui::GetMousePos(); 
    ImVec2 window_pos = ImGui::GetWindowPos(); 
    ImVec2 relative_mouse_pos = ImVec2(mouse_pos.x - window_pos.x, mouse_pos.y - window_pos.y);
-
+   ImVec2 current_pos = canvas_pos;
    int indx = 0;
    for (auto& el : elements) {
-      ImVec2 pos = ImVec2(canvas_pos.x + el.pos.x, canvas_pos.y + el.pos.y);
-      ImVec2 text_size, margin = {0, 0};
+      ImVec2 text_size, margin = {0, 0}, pos;
       if (current_layout == layout_type::linear_layout &&
             el.attr.linear.width_int != -1 && 
             el.attr.linear.height_int != -1){
          text_size = ImVec2(el.attr.linear.height_int, el.attr.linear.width_int);
       } else 
          text_size = ImGui::CalcTextSize(el.text.c_str());
+      
+      pos.x = margin.x;
+      pos.y = margin.y;
 
       if (current_layout == layout_type::linear_layout){
          margin = ImVec2(el.attr.linear.margin_int, el.attr.linear.margin_int);
-         pos.x += margin.x;
-         pos.y += margin.y;
+         ImVec2 p = get_aligment_pos(layout_settings.gravity, text_size, current_pos); 
+         pos.x += p.x;
+         pos.y += p.y;
+         if (layout_settings.orientation == "horizontal"){
+            current_pos.x += text_size.x * 2.0f + margin.x;
+         } else {
+            current_pos.y += text_size.y * 4.0f + margin.y;
+         }
       }
 
       ImVec2 rect_end = ImVec2(pos.x + text_size.x + 9.0f, pos.y + text_size.y * 3.0f);

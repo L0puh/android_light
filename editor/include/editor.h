@@ -32,6 +32,7 @@ namespace imgui {
 };
 
 
+
 struct linear_attr_t {
    std::string width;
    std::string height;
@@ -41,6 +42,7 @@ struct linear_attr_t {
    int height_int = -1;
    int margin_int = 0;
 };
+
 struct attributes_t {
    linear_attr_t linear;
 };
@@ -126,6 +128,7 @@ class Editor {
       void edit_item_relative_layout();
       void edit_item_contraint_layout();
       void edit_item_frame_layout();
+      ImVec2 get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canvas);
 };
 
 
