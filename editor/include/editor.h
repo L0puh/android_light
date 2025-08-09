@@ -42,9 +42,23 @@ struct linear_attr_t {
    int height_int = -1;
    int margin_int = 0;
 };
+struct relative_attr_t{
+   bool align_parent_top    = false;
+   bool align_parent_left   = false;
+   bool align_parent_right  = false;
+   bool align_parent_bottom = false;
+
+   std::string layout_below; /* specify ids of elements */
+   std::string layout_above;
+   std::string to_left_of;
+   std::string to_right_of;
+   std::string to_end_of;
+   std::string to_start_of;
+};
 
 struct attributes_t {
    linear_attr_t linear;
+   relative_attr_t relative;
 };
 
 struct element_t{
@@ -129,6 +143,12 @@ class Editor {
       void edit_item_contraint_layout();
       void edit_item_frame_layout();
       ImVec2 get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canvas);
+
+   private:
+
+      void update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
+      void update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
+      void update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
 };
 
 

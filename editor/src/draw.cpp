@@ -100,6 +100,52 @@ ImVec2 Editor::get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canv
    return pos;
 }
 
+void Editor::update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
+   //FIXME:
+   ImVec2 text_size; 
+   text_size = ImGui::CalcTextSize(el.text.c_str());
+
+   if (el.attr.relative.align_parent_bottom){
+      pos->y = current_pos->y + phone_size.y - text_size.y * 2.0f;
+   } else {
+      *pos = *current_pos;
+   }
+
+   if (layout_settings.orientation == "horizontal"){
+      current_pos->x += text_size.x * 2.0f;
+   } else {
+      current_pos->y += text_size.y * 4.0f;
+   }
+   *rect_end = ImVec2(pos->x + text_size.x + 9.0f, pos->y + text_size.y * 3.0f);
+}
+
+void Editor::update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
+   float margin;
+   ImVec2 text_size;
+   if (el.attr.linear.width_int != -1 && el.attr.linear.height_int != -1){
+      text_size = ImVec2(el.attr.linear.height_int, el.attr.linear.width_int);
+   } else 
+      text_size = ImGui::CalcTextSize(el.text.c_str());
+
+   margin = el.attr.linear.margin_int;
+   pos->x = margin; 
+   pos->y = margin;
+
+   ImVec2 p = get_aligment_pos(layout_settings.gravity, text_size, *current_pos); 
+   pos->x += p.x;
+   pos->y += p.y;
+   if (layout_settings.orientation == "horizontal"){
+      current_pos->x += text_size.x * 2.0f + margin;
+   } else {
+      current_pos->y += text_size.y * 4.0f + margin;
+   }
+   *rect_end = ImVec2(pos->x + text_size.x + 9.0f, pos->y + text_size.y * 3.0f);
+}
+void Editor::update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
+   if (current_layout == linear_layout) update_linear(el, current_pos, rect_end, pos);
+   if (current_layout == relative_layout) update_relative(el, current_pos, rect_end, pos);
+}
+
 void Editor::draw_elements(){
    ImDrawList* draw_list = ImGui::GetWindowDrawList();
    ImVec2 mouse_pos = ImGui::GetMousePos(); 
@@ -108,30 +154,8 @@ void Editor::draw_elements(){
    ImVec2 current_pos = canvas_pos;
    int indx = 0;
    for (auto& el : elements) {
-      ImVec2 text_size, margin = {0, 0}, pos;
-      if (current_layout == layout_type::linear_layout &&
-            el.attr.linear.width_int != -1 && 
-            el.attr.linear.height_int != -1){
-         text_size = ImVec2(el.attr.linear.height_int, el.attr.linear.width_int);
-      } else 
-         text_size = ImGui::CalcTextSize(el.text.c_str());
-      
-      pos.x = margin.x;
-      pos.y = margin.y;
-
-      if (current_layout == layout_type::linear_layout){
-         margin = ImVec2(el.attr.linear.margin_int, el.attr.linear.margin_int);
-         ImVec2 p = get_aligment_pos(layout_settings.gravity, text_size, current_pos); 
-         pos.x += p.x;
-         pos.y += p.y;
-         if (layout_settings.orientation == "horizontal"){
-            current_pos.x += text_size.x * 2.0f + margin.x;
-         } else {
-            current_pos.y += text_size.y * 4.0f + margin.y;
-         }
-      }
-
-      ImVec2 rect_end = ImVec2(pos.x + text_size.x + 9.0f, pos.y + text_size.y * 3.0f);
+      ImVec2 rect_end, pos;
+      update_element(el, &current_pos, &rect_end, &pos);
 
       draw_list->AddRectFilled(pos, rect_end, color::blue, 1.0f);
       draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(),

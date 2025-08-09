@@ -8,6 +8,50 @@ void Editor::edit_item_contraint_layout(){
 }
 void Editor::edit_item_relative_layout(){
 
+   static int align = 0;
+   static bool align_to = 0;
+   static char below[256] = "";
+   static char above[256] = "";
+   static char left_to[256] = "";
+   static char right_to[256] = "";
+   static char end_to[256] = "";
+   static char start_to[256] = "";
+
+   // TODO: add ability to click on object and get the id to align to
+   if (editing_index != -1){
+
+      relative_attr_t attr = elements[editing_index].attr.relative;
+      ImGui::RadioButton("align parent top", &align, 0);
+      ImGui::RadioButton("align parent left", &align, 1);
+      ImGui::RadioButton("align parent right", &align, 2);
+      ImGui::RadioButton("align parent bottom", &align, 3);
+
+      if (align == 0) attr.align_parent_top = 1;
+      if (align == 1) attr.align_parent_left = 1;
+      if (align == 2) attr.align_parent_right = 1;
+      if (align == 3) attr.align_parent_bottom = 1;
+
+      if (ImGui::InputText("id below", below, IM_ARRAYSIZE(below))){
+         attr.layout_below = below;
+      }
+      if (ImGui::InputText("id above", above, IM_ARRAYSIZE(above))){
+         attr.layout_above = above;
+      }
+      if (ImGui::InputText("id to left of", left_to, IM_ARRAYSIZE(left_to))){
+         attr.to_left_of = left_to;
+      }
+      if (ImGui::InputText("id to right of", right_to, IM_ARRAYSIZE(right_to))){
+         attr.to_right_of = right_to;
+      }
+      if (ImGui::InputText("id to end of", end_to, IM_ARRAYSIZE(end_to))){
+         attr.to_end_of = end_to;
+      }
+      if (ImGui::InputText("id to start of", start_to, IM_ARRAYSIZE(start_to))){
+         attr.to_start_of = start_to;
+      }
+      
+      elements[editing_index].attr.relative = attr;
+   }
 
 }
 void Editor::edit_item_linear_layout(){
