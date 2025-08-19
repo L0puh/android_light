@@ -27,7 +27,22 @@ void Editor::add_item_popup(){
 
       add_drag_and_drop("TextView");
       add_drag_and_drop("Button");
-      add_drag_and_drop("INPUT");
+      add_drag_and_drop("InputText");
+      ImGui::EndPopup();
+   }
+}
+
+void Editor::open_accept_if_any(){
+   if (ImGui::BeginPopup("Accept", ImGuiWindowFlags_AlwaysAutoResize)){
+      ImGui::Text("Are you sure?");
+      if (ImGui::Button("Yes")){
+         accept_flag = true;
+         ImGui::CloseCurrentPopup();
+      } 
+      if (ImGui::Button("No")){
+         accept_flag = false;
+         ImGui::CloseCurrentPopup();
+      }
       ImGui::EndPopup();
    }
 }
@@ -41,9 +56,13 @@ void Editor::draw_menu(){
    ImGui::Separator();
 
 
-   if (ImGui::Button("New")) {
-      ImGui::OpenPopup("Create new file");
-      elements.clear(); //TODO: ask before deleting
+   if (ImGui::Button("New") || accept_flag) {
+      ImGui::OpenPopup("Accept");
+      if (accept_flag) {
+         accept_flag = false;
+         ImGui::OpenPopup("Create new file");
+         elements.clear(); 
+      }
 
    }
   
@@ -71,6 +90,7 @@ void Editor::draw_menu(){
    open_file();
    add_item_popup();
    layout_menu();
+   open_accept_if_any();
    ImGui::EndChild();
 
 }
@@ -146,6 +166,26 @@ void Editor::update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end,
    if (current_layout == relative_layout) update_relative(el, current_pos, rect_end, pos);
 }
 
+void Editor::draw_based_on_type(ImDrawList* draw_list, element_t element, ImVec2 pos, ImVec2 rect_end){
+   if (element.type == "Button"){
+      draw_list->AddRectFilled(pos, rect_end, color::blue, 1.0f); 
+   }
+   if (element.type == "TextView"){
+      draw_list->AddRectFilled(pos, rect_end, color::red, 1.0f); 
+   }
+   if (element.type == "InputText"){
+      draw_list->AddRectFilled(pos, rect_end, color::green, 1.0f); 
+      draw_list->AddRect(pos, rect_end, color::white, 1.0f, ImDrawFlags_None, 3.0f);
+      draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(), ImVec2(pos.x + 5, pos.y + 10.0f),
+            color::grey, element.text.c_str());
+
+      return;
+   }
+   draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(),
+         ImVec2(pos.x + 5, pos.y + 10),
+         color::white, element.text.c_str());
+}
+
 void Editor::draw_elements(){
    ImDrawList* draw_list = ImGui::GetWindowDrawList();
    ImVec2 mouse_pos = ImGui::GetMousePos(); 
@@ -156,11 +196,7 @@ void Editor::draw_elements(){
    for (auto& el : elements) {
       ImVec2 rect_end, pos;
       update_element(el, &current_pos, &rect_end, &pos);
-
-      draw_list->AddRectFilled(pos, rect_end, color::blue, 1.0f);
-      draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(),
-            ImVec2(pos.x + 5, pos.y + 10),
-            color::white, el.text.c_str());
+      draw_based_on_type(draw_list, el, pos, rect_end);
 
       bool is_mouse_over = (relative_mouse_pos.x >= pos.x && relative_mouse_pos.x <= rect_end.x &&
             relative_mouse_pos.y >= pos.y && relative_mouse_pos.y <= rect_end.y);
@@ -217,13 +253,13 @@ ImVec2 Editor::draw_canvas(){
 
    if (ImGui::BeginDragDropTarget()){
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("TextView")){
-         elements.push_back({"my_id", "TextView", "white", "text", mouse_pos});
+         elements.push_back({"my_id", "TextView", "my text", "white", mouse_pos});
       }
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Button")){
          elements.push_back({"my_id", "Button", "button", "white", mouse_pos});
       }
-      if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("INPUT")){
-         elements.push_back({"my_id", "INPUT", "input", "white", mouse_pos});
+      if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("InputText")){
+         elements.push_back({"my_id", "InputText", "input", "white", mouse_pos}); // FIXME: is it the right type?
       }
       ImGui::EndDragDropTarget();
    }
