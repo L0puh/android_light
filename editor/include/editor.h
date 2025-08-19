@@ -20,6 +20,8 @@ namespace color {
    const uint grey  = IM_COL32(50, 50, 50, 255);
    const uint blue  = IM_COL32(0, 150, 255, 255);
    const uint white = IM_COL32(200, 200, 200, 255);
+   const uint red   = IM_COL32(255, 0, 0, 255);
+   const uint green = IM_COL32(0, 255, 0, 255);
 }
 
 namespace imgui {
@@ -92,6 +94,7 @@ class Editor {
 
    std::vector<element_t> elements; 
    const ImVec2 phone_size = ImVec2(420, 934);
+   bool accept_flag = false;
 
    int editing_index = -1;
    ImVec2 canvas_pos;
@@ -115,6 +118,7 @@ class Editor {
       void remove_flag(ImGuiWindowFlags f) { window_flags &= ~f; }
 
       void draw();
+      void draw_based_on_type(ImDrawList* draw_list, element_t element, ImVec2 pos, ImVec2 rect_end);
       const ImVec2 get_phone_size() { return phone_size; }
 
    private:
@@ -122,6 +126,7 @@ class Editor {
       void add_item_popup();
       void draw_elements();
       void draw_menu();
+      void open_accept_if_any();
       void edit_element();
       ImVec2 draw_canvas();
       void add_drag_and_drop(const char* type);
