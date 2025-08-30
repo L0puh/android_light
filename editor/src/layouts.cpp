@@ -25,7 +25,11 @@ void Editor::edit_item_relative_layout(){
       ImGui::RadioButton("align parent left", &align, 1);
       ImGui::RadioButton("align parent right", &align, 2);
       ImGui::RadioButton("align parent bottom", &align, 3);
-
+      attr.align_parent_top    = 0;
+      attr.align_parent_left   = 0;       
+      attr.align_parent_right  = 0;
+      attr.align_parent_bottom = 0;      
+      
       if (align == 0) attr.align_parent_top = 1;
       if (align == 1) attr.align_parent_left = 1;
       if (align == 2) attr.align_parent_right = 1;

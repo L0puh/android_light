@@ -69,6 +69,7 @@ struct element_t{
     std::string text="";
     std::string background;
     ImVec2 pos;
+    ImVec2 rect_end;
     attributes_t attr;
 };
 
@@ -89,6 +90,33 @@ struct layout_t {
    std::string background="white";
 };
 
+class State {
+   protected:
+      bool verbose_on = false;
+      bool debug_mode = false;
+      State() {} 
+      static State* instance;
+   public:
+      static State* get_instance() {
+         if (instance == NULL) instance = new State();
+         return instance;
+      }
+
+      void set_verbose(bool on) { 
+         this->verbose_on = on;
+      }
+      void set_debug(bool on) {
+         this->debug_mode = on;
+      }
+      bool is_verbose() {
+         return verbose_on;
+      }
+      bool is_debug() {
+         return debug_mode;
+      }
+
+
+};
 
 class Editor {
 
@@ -130,7 +158,7 @@ class Editor {
       void edit_element();
       ImVec2 draw_canvas();
       void add_drag_and_drop(const char* type);
-
+      
 
    private:
       /* FILES */
@@ -154,6 +182,7 @@ class Editor {
       void update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       void update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       void update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
+      element_t find_widget_by_id(std::string);
 };
 
 

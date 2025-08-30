@@ -13,6 +13,7 @@ void parse_xml(std::string& filename){
 
    XMLElement* root = doc.RootElement();
 
+
    //TODO... extract resources
    
 }

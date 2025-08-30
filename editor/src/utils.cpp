@@ -7,9 +7,25 @@ const std::string GREEN = "\033[32m";
 const std::string YELLOW = "\033[33m";
 const std::string BLUE = "\033[34m";
 
+
+element_t Editor::find_widget_by_id(std::string id){
+   element_t el;
+   
+   for (int i = 0; i < elements.size(); i++){
+      if (elements[i].id == id){
+         return elements[i];
+      }
+   }
+   
+
+   return el;
+}
+
+
 namespace utils {
 
    void log_info(log_type type, const char* format, ...) {
+      if (!State::get_instance()->is_verbose()) return;
       std::string color, prefix;
       switch (type) {
          case INFO:
@@ -23,7 +39,6 @@ namespace utils {
          case WARN:
             color = YELLOW;
             prefix = "WARN";
-            break;
             break;
       }
 

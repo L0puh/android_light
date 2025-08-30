@@ -76,8 +76,8 @@ void Editor::edit_element(){
    if (editing_index != -1){
       // FIXME: based on current layout
       // i.e for relative: add siblings
-      // for constraint: add parents 
-      // for frame: fixed coordinates
+      // for constraint:   add parents 
+      // for frame:       fixed coordinates
       if (current_layout == frame_layout)
          ImGui::Checkbox("is moving", &is_moving);
 
@@ -88,8 +88,7 @@ void Editor::edit_element(){
          elements[editing_index].text = input_buffer;
       }
       if (is_moving && ImGui::IsMouseClicked(0) && !dragging){
-         ImGui::Text("MOVING OBJECT...");
-         ImGui::Text("click there to place...");
+         ImGui::Text("moving object...");
          dragging = true;
       }
       if (dragging && ImGui::IsMouseDown(0)) {

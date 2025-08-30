@@ -63,7 +63,6 @@ void Editor::draw_menu(){
          ImGui::OpenPopup("Create new file");
          elements.clear(); 
       }
-
    }
   
    if (ImGui::Button("Open")) {
@@ -121,15 +120,41 @@ ImVec2 Editor::get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canv
 }
 
 void Editor::update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
-   //FIXME:
    ImVec2 text_size; 
    text_size = ImGui::CalcTextSize(el.text.c_str());
-
+  
+   //FIXME: stacking of widgets is wrong:
    if (el.attr.relative.align_parent_bottom){
-      pos->y = current_pos->y + phone_size.y - text_size.y * 2.0f;
-   } else {
+      pos->x = current_pos->x;
+      pos->y = current_pos->y + phone_size.y - text_size.y * 4.0f;
+   } else if (el.attr.relative.align_parent_right) {
+      pos->x = current_pos->x + phone_size.x - text_size.x;
+      pos->y = current_pos->y  + phone_size.y/2.0f;
+   }
+   else if (el.attr.relative.align_parent_left) {
+      pos->x = current_pos->x;
+      pos->y = current_pos->y  + phone_size.y/2.0f;
+   }
+   else {
       *pos = *current_pos;
    }
+
+   if (el.attr.relative.layout_above != ""){
+      element_t above = find_widget_by_id(el.attr.relative.layout_above);
+      pos->x = current_pos->x;
+      pos->y = above.pos.y - text_size.y * 5;
+
+      //FIXME:
+      ImGui::GetWindowDrawList()->AddLine(*pos, above.pos, color::white, 2.0f); 
+   }
+
+   if (el.attr.relative.layout_below != ""){
+      element_t below= find_widget_by_id(el.attr.relative.layout_above);
+      pos->x = current_pos->x;
+      pos->y = below.pos.y + text_size.y * 5;
+   }
+        
+
 
    if (layout_settings.orientation == "horizontal"){
       current_pos->x += text_size.x * 2.0f;
@@ -162,6 +187,7 @@ void Editor::update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, 
    *rect_end = ImVec2(pos->x + text_size.x + 9.0f, pos->y + text_size.y * 3.0f);
 }
 void Editor::update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
+
    if (current_layout == linear_layout) update_linear(el, current_pos, rect_end, pos);
    if (current_layout == relative_layout) update_relative(el, current_pos, rect_end, pos);
 }
@@ -196,6 +222,7 @@ void Editor::draw_elements(){
    for (auto& el : elements) {
       ImVec2 rect_end, pos;
       update_element(el, &current_pos, &rect_end, &pos);
+      el.rect_end = rect_end;
       draw_based_on_type(draw_list, el, pos, rect_end);
 
       bool is_mouse_over = (relative_mouse_pos.x >= pos.x && relative_mouse_pos.x <= rect_end.x &&
