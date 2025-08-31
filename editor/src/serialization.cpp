@@ -30,6 +30,8 @@ void serialize_xml(const std::vector<element_t> data, std::string& filename){
    root->SetAttribute("android:layout_height", "match_parent");
    root->SetAttribute("android:gravity", "center");
    root->SetAttribute("android:orientation", "vertical");
+   root->SetAttribute("android:background", utils::get_hex_color(State::get_instance()->background_color).c_str());
+
    
    doc.InsertEndChild(root);
    for (const auto& i: data){
@@ -45,6 +47,11 @@ void serialize_xml(const std::vector<element_t> data, std::string& filename){
       el->SetAttribute("android:text", i.text.c_str());
       el->SetAttribute("android:layout_width", "wrap_content");
       el->SetAttribute("android:layout_height", "wrap_content");
+      
+      if (i.type == "EditText" && i.input_type != "") {
+         el->SetAttribute("android:inputType", i.input_type.c_str());
+         el->SetAttribute("android:hint", i.hint.c_str());
+      }
 
       //FIXME
       // el->SetAttribute("android:layout_marginLeft", pos_x.c_str());

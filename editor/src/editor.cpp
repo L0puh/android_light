@@ -91,6 +91,16 @@ void Editor::edit_element(){
          ImGui::Text("moving object...");
          dragging = true;
       }
+      if (elements[editing_index].type == "EditText"){
+         const char* types[] = {"text", "number", "phone", "datetime", "date", "time", "numberPassword"};
+         static int indx = 0;
+         ImGui::Combo("input types", &indx, types, IM_ARRAYSIZE(types));
+         elements[editing_index].input_type = types[indx];
+         static char buffer[256];
+         if (ImGui::InputText("hint (placeholder)", buffer, IM_ARRAYSIZE(buffer))){
+            elements[editing_index].hint = buffer;
+         }
+      }
       if (dragging && ImGui::IsMouseDown(0)) {
          ImVec2 mouse = ImGui::GetMousePos();
          ImVec2 new_pos = ImVec2(mouse.x - canvas_pos.x, mouse.y - canvas_pos.y);

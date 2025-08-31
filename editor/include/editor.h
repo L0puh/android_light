@@ -71,6 +71,9 @@ struct element_t{
     ImVec2 pos;
     ImVec2 rect_end;
     attributes_t attr;
+
+    std::string input_type = "text"; // for EditText
+    std::string hint = "enter text";                                 
 };
 
 enum layout_type {
@@ -92,7 +95,7 @@ struct layout_t {
 
 class State {
    public:
-      float background_color[4] = {50.0f, 50.0f, 50.0f, 255.0f};
+      float background_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
    protected:
       bool verbose_on = false;
       bool debug_mode = false;
@@ -197,6 +200,7 @@ enum log_type {
    WARN
 };
 namespace utils {
+   std::string get_hex_color(float color[4]);
    ImU32 get_color(float color[4]);
    void log_info(log_type type, const char* format, ...);
    void glfw_error_callback(int error, const char* description);

@@ -27,7 +27,7 @@ void Editor::add_item_popup(){
 
       add_drag_and_drop("TextView");
       add_drag_and_drop("Button");
-      add_drag_and_drop("InputText");
+      add_drag_and_drop("EditText");
       ImGui::EndPopup();
    }
 }
@@ -228,7 +228,7 @@ void Editor::draw_based_on_type(ImDrawList* draw_list, element_t element, ImVec2
    if (element.type == "TextView"){
       draw_list->AddRectFilled(pos, rect_end, color::red, 1.0f); 
    }
-   if (element.type == "InputText"){
+   if (element.type == "EditText"){
       draw_list->AddRectFilled(pos, rect_end, color::green, 1.0f); 
       draw_list->AddRect(pos, rect_end, color::white, 1.0f, ImDrawFlags_None, 3.0f);
       draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize(), ImVec2(pos.x + 5, pos.y + 10.0f),
@@ -314,8 +314,8 @@ ImVec2 Editor::draw_canvas(){
       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Button")){
          elements.push_back({"my_id", "Button", "button", "white", mouse_pos});
       }
-      if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("InputText")){
-         elements.push_back({"my_id", "InputText", "input", "white", mouse_pos}); // FIXME: is it the right type?
+      if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EditText")){
+         elements.push_back({"my_id", "EditText", "input", "white", mouse_pos}); 
       }
       ImGui::EndDragDropTarget();
    }
