@@ -100,9 +100,14 @@ void Editor::edit_element(){
          dragging = 0;
          is_moving = false;
       }
-      if (ImGui::Button("done")){
-
+      if (ImGui::Button("OK")){
          if (*id_buffer == 0) { elements[editing_index].id = "my_id"; }
+         editing_index = -1;
+         *input_buffer = 0;
+         *id_buffer = 0;
+      } ImGui::SameLine();
+      if (ImGui::Button("delete")){
+         elements.erase(elements.begin() + editing_index);
          editing_index = -1;
          *input_buffer = 0;
          *id_buffer = 0;

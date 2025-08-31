@@ -46,6 +46,35 @@ void Editor::open_accept_if_any(){
       ImGui::EndPopup();
    }
 }
+
+void Editor::draw_settings() {
+
+   const char* sizes[] = { "IPhone SE (1136x640)", "Galaxy S21(2400x1080)", "Huawei P30(2340x1080)"};
+   static int sizes_index = 0;
+
+   if (ImGui::BeginPopup("SETTINGS", 0)){
+      ImGui::SeparatorText("PHONE SIZE");
+      ImGui::Combo("defined sizes", &sizes_index, sizes, IM_ARRAYSIZE(sizes));
+      switch(sizes_index){
+         case 0:
+            phone_size = ImVec2(320,568);
+            break;
+         case 1:
+            phone_size = ImVec2(360, 760);
+            break;
+         case 2:
+            phone_size = ImVec2(720, 1560);
+            break;
+      }
+      ImGui::InputFloat2("size", &phone_size.x, "%.3f", 0);
+      ImGui::SeparatorText("BACKGROUND COLOR");
+      ImGui::ColorPicker4("BG", State::get_instance()->background_color, ImGuiColorEditFlags_AlphaBar);
+      ImGui::EndPopup();
+   }
+
+}
+
+
 void Editor::draw_menu(){
 
    ImGui::BeginChild("MENU", ImVec2(0, 0),
@@ -75,16 +104,16 @@ void Editor::draw_menu(){
       ImGui::OpenPopup("Add item");
    }
   
-   if (ImGui::Button("Delete widget")) {
-   }
    if (ImGui::Button("Save xml file")) {
       IGFD::FileDialogConfig config;
       config.path = ".";
       ImGuiFileDialog::Instance()->OpenDialog("choose file to write", "Choose File", ".xml", config);
    }
    if (ImGui::Button("Settings")) {
+      ImGui::OpenPopup("SETTINGS");
    }
    
+   draw_settings();
    create_new_file();
    open_file();
    add_item_popup();
@@ -275,7 +304,7 @@ ImVec2 Editor::draw_canvas(){
    bool hovered = ImGui::IsItemHovered();
    
    ImVec2 sz = ImVec2(canvas_size.x + canvas_pos.x, canvas_size.y + canvas_pos.y);
-   draw_list->AddRectFilled(canvas_pos, sz, color::grey); 
+   draw_list->AddRectFilled(canvas_pos, sz, utils::get_color(State::get_instance()->background_color));
    draw_list->AddRect(canvas_pos, sz ,color::white , 0.0f, ImDrawFlags_None, 2.0f); 
 
    if (ImGui::BeginDragDropTarget()){

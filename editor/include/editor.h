@@ -91,6 +91,8 @@ struct layout_t {
 };
 
 class State {
+   public:
+      float background_color[4] = {50.0f, 50.0f, 50.0f, 255.0f};
    protected:
       bool verbose_on = false;
       bool debug_mode = false;
@@ -121,7 +123,7 @@ class State {
 class Editor {
 
    std::vector<element_t> elements; 
-   const ImVec2 phone_size = ImVec2(420, 934);
+   ImVec2 phone_size = ImVec2(420, 934);
    bool accept_flag = false;
 
    int editing_index = -1;
@@ -154,6 +156,7 @@ class Editor {
       void add_item_popup();
       void draw_elements();
       void draw_menu();
+      void draw_settings();
       void open_accept_if_any();
       void edit_element();
       ImVec2 draw_canvas();
@@ -194,6 +197,7 @@ enum log_type {
    WARN
 };
 namespace utils {
+   ImU32 get_color(float color[4]);
    void log_info(log_type type, const char* format, ...);
    void glfw_error_callback(int error, const char* description);
    void key_callback(GLFWwindow* window, int key, int code, int action, int mods);

@@ -16,13 +16,15 @@ element_t Editor::find_widget_by_id(std::string id){
          return elements[i];
       }
    }
-   
 
    return el;
 }
 
 
 namespace utils {
+   ImU32 get_color(float color[4]){
+      return IM_COL32(color[0] * 255, color[1] * 255, color[2] * 255, color[3] * 255.0f);
+   }
 
    void log_info(log_type type, const char* format, ...) {
       if (!State::get_instance()->is_verbose()) return;
