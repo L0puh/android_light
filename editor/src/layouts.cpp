@@ -17,7 +17,6 @@ void Editor::edit_item_relative_layout(){
    static char end_to[256] = "";
    static char start_to[256] = "";
 
-   // TODO: add ability to click on object and get the id to align to
    if (editing_index != -1){
 
       relative_attr_t attr = elements[editing_index].attr.relative;

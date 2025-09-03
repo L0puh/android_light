@@ -148,6 +148,16 @@ ImVec2 Editor::get_aligment_pos(std::string& type, ImVec2 text_size, ImVec2 canv
    return pos;
 }
 
+void Editor::update_frame(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
+   ImVec2 text_size; 
+   text_size = ImGui::CalcTextSize(el.text.c_str());
+   if (!dragging) {
+      pos->x = current_pos->x + el.pos.x;
+      pos->y = current_pos->y + el.pos.y;
+      *rect_end = ImVec2(pos->x + text_size.x + 9.0f, pos->y + text_size.y * 3.0f);
+   }
+}
+
 void Editor::update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
    ImVec2 text_size; 
    text_size = ImGui::CalcTextSize(el.text.c_str());
@@ -166,15 +176,6 @@ void Editor::update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end
    }
    else {
       *pos = *current_pos;
-   }
-
-   if (el.attr.relative.layout_above != ""){
-      element_t above = find_widget_by_id(el.attr.relative.layout_above);
-      pos->x = current_pos->x;
-      pos->y = above.pos.y - text_size.y * 5;
-
-      //FIXME:
-      ImGui::GetWindowDrawList()->AddLine(*pos, above.pos, color::white, 2.0f); 
    }
 
    if (el.attr.relative.layout_below != ""){
@@ -219,6 +220,7 @@ void Editor::update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end,
 
    if (current_layout == linear_layout) update_linear(el, current_pos, rect_end, pos);
    if (current_layout == relative_layout) update_relative(el, current_pos, rect_end, pos);
+   if (current_layout == frame_layout) update_frame(el, current_pos, rect_end, pos);
 }
 
 void Editor::draw_based_on_type(ImDrawList* draw_list, element_t element, ImVec2 pos, ImVec2 rect_end){

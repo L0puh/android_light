@@ -9,7 +9,6 @@
 }
 
 
-
 void Editor::save_file(std::string& filename){
    std::ofstream ofs(filename);
    if (ofs.is_open())
@@ -19,7 +18,7 @@ void Editor::save_file(std::string& filename){
       return;
    }
 
-   serialize_xml(elements, filename);
+   serialize_xml(elements, filename, (layout_type)current_layout);
    ofs.close();
 }
 void Editor::create_new_file(){
@@ -62,6 +61,7 @@ void Editor::read_file(std::string& filename){
    else utils::log_info(ERROR, "failed to open file to read %s", filename.c_str());
 
    //TODO: elements = deserialize(ifs);
+   parse_xml(filename);
    ifs.close();
 }
 
@@ -72,15 +72,18 @@ void Editor::edit_element(){
 
    static char input_buffer[256];
    static char id_buffer[256];
-   static bool is_moving = false, dragging = false;
+   static bool is_moving = false;
    if (editing_index != -1){
       // FIXME: based on current layout
       // i.e for relative: add siblings
       // for constraint:   add parents 
       // for frame:       fixed coordinates
-      if (current_layout == frame_layout)
-         ImGui::Checkbox("is moving", &is_moving);
-
+      if (current_layout == frame_layout){
+         static ImVec2 pos;
+         ImGui::Checkbox("is moving to position", &is_moving);
+         ImGui::InputFloat2("Position on canvas", &pos.x, "%.3f");
+         elements[editing_index].pos = pos;
+      } 
       if(ImGui::InputText("edit id", id_buffer, IM_ARRAYSIZE(input_buffer))){
          elements[editing_index].id = id_buffer;
       }

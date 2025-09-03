@@ -81,7 +81,6 @@ enum layout_type {
    relative_layout,
    constraint_layout,
    frame_layout
-  //TODO: add more... 
 };
 
 
@@ -134,6 +133,7 @@ class Editor {
    int current_layout = linear_layout;
    
    layout_t layout_settings;
+   bool dragging = 0;
    
    protected:
       ImGuiWindowFlags window_flags = 
@@ -188,11 +188,13 @@ class Editor {
       void update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       void update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       void update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
+      void update_frame(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       element_t find_widget_by_id(std::string);
 };
 
 
-void serialize_xml(const std::vector<element_t> data, std::string& filename);
+void serialize_xml(const std::vector<element_t> data, std::string& filename, layout_type layout);
+void parse_xml(std::string& filename);
 
 enum log_type {
    INFO,
