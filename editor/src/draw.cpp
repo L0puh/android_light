@@ -3,7 +3,6 @@
 
 
 void Editor::draw() {
-
    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
    ImGui::Begin("EDITOR", nullptr, window_flags | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize);
       draw_menu();
@@ -183,8 +182,6 @@ void Editor::update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end
       pos->x = current_pos->x;
       pos->y = below.pos.y + text_size.y * 5;
    }
-        
-
 
    if (layout_settings.orientation == "horizontal"){
       current_pos->x += text_size.x * 2.0f;
@@ -218,9 +215,9 @@ void Editor::update_linear(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, 
 }
 void Editor::update_element(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos){
 
-   if (current_layout == linear_layout) update_linear(el, current_pos, rect_end, pos);
-   if (current_layout == relative_layout) update_relative(el, current_pos, rect_end, pos);
-   if (current_layout == frame_layout) update_frame(el, current_pos, rect_end, pos);
+   if (layout_settings.type == linear_layout) update_linear(el, current_pos, rect_end, pos);
+   if (layout_settings.type == relative_layout) update_relative(el, current_pos, rect_end, pos);
+   if (layout_settings.type == frame_layout) update_frame(el, current_pos, rect_end, pos);
 }
 
 void Editor::draw_based_on_type(ImDrawList* draw_list, element_t element, ImVec2 pos, ImVec2 rect_end){
@@ -272,9 +269,11 @@ void Editor::layout_menu(){
 
    ImGui::SeparatorText("Layout attributes");
    edit_window_layout();
-   ImGui::Combo("layout", &current_layout, l, IM_ARRAYSIZE(l));
+   static int type = 0;
+   ImGui::Combo("layout", &type, l, IM_ARRAYSIZE(l));
+   layout_settings.type = (layout_type)type;
 
-   switch((layout_type)current_layout){
+   switch((layout_type)layout_settings.type){
       case linear_layout:
          edit_item_linear_layout();
          break;

@@ -85,6 +85,7 @@ enum layout_type {
 
 
 struct layout_t {
+   layout_type type = layout_type::linear_layout;
    std::string orientation = "vertical";
    std::string width = "match_parent";
    std::string height= "match_parent";
@@ -130,7 +131,6 @@ class Editor {
 
    int editing_index = -1;
    ImVec2 canvas_pos;
-   int current_layout = linear_layout;
    
    layout_t layout_settings;
    bool dragging = 0;
@@ -193,8 +193,8 @@ class Editor {
 };
 
 
-void serialize_xml(const std::vector<element_t> data, std::string& filename, layout_type layout);
-void parse_xml(std::string& filename);
+void serialize_xml(const std::vector<element_t> data, std::string& filename, layout_t& layout);
+void parse_xml(std::string& filename, layout_t *parsed_layout, std::vector<element_t> *parsed_elements);
 
 enum log_type {
    INFO,

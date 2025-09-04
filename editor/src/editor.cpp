@@ -18,7 +18,7 @@ void Editor::save_file(std::string& filename){
       return;
    }
 
-   serialize_xml(elements, filename, (layout_type)current_layout);
+   serialize_xml(elements, filename, layout_settings);
    ofs.close();
 }
 void Editor::create_new_file(){
@@ -60,8 +60,7 @@ void Editor::read_file(std::string& filename){
    if (ifs.is_open()) utils::log_info(INFO, "open file to read %s", filename.c_str());
    else utils::log_info(ERROR, "failed to open file to read %s", filename.c_str());
 
-   //TODO: elements = deserialize(ifs);
-   parse_xml(filename);
+   parse_xml(filename, &layout_settings, &elements);
    ifs.close();
 }
 
@@ -78,7 +77,7 @@ void Editor::edit_element(){
       // i.e for relative: add siblings
       // for constraint:   add parents 
       // for frame:       fixed coordinates
-      if (current_layout == frame_layout){
+      if (layout_settings.type == frame_layout){
          static ImVec2 pos;
          ImGui::Checkbox("is moving to position", &is_moving);
          ImGui::InputFloat2("Position on canvas", &pos.x, "%.3f");
