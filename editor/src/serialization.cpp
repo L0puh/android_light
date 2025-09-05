@@ -130,8 +130,14 @@ void serialize_xml(const std::vector<element_t> data, std::string& filename, lay
 
       el->SetAttribute("android:id",   id.c_str());
       el->SetAttribute("android:text", i.text.c_str());
-      el->SetAttribute("android:layout_width", "wrap_content");
+      el->SetAttribute("android:layout_width",  "wrap_content");
       el->SetAttribute("android:layout_height", "wrap_content");
+
+      if (layout_type::frame_layout == layout.type){
+        el->SetAttribute("android:layout_marginStart", pos_x.c_str());
+        el->SetAttribute("android:layout_marginTop", pos_y.c_str());
+          
+      }
       
       if (i.type == "EditText" && i.input_type != "") {
          el->SetAttribute("android:inputType", i.input_type.c_str());

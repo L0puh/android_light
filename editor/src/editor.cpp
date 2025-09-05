@@ -79,7 +79,6 @@ void Editor::edit_element(){
       // for frame:       fixed coordinates
       if (layout_settings.type == frame_layout){
          static ImVec2 pos;
-         ImGui::Checkbox("is moving to position", &is_moving);
          ImGui::InputFloat2("Position on canvas", &pos.x, "%.3f");
          elements[editing_index].pos = pos;
       } 
@@ -88,10 +87,6 @@ void Editor::edit_element(){
       }
       if(ImGui::InputText("edit text", input_buffer, IM_ARRAYSIZE(input_buffer))){
          elements[editing_index].text = input_buffer;
-      }
-      if (is_moving && ImGui::IsMouseClicked(0) && !dragging){
-         ImGui::Text("moving object...");
-         dragging = true;
       }
       if (elements[editing_index].type == "EditText"){
          const char* types[] = {"text", "number", "phone", "datetime", "date", "time", "numberPassword"};
@@ -102,15 +97,6 @@ void Editor::edit_element(){
          if (ImGui::InputText("hint (placeholder)", buffer, IM_ARRAYSIZE(buffer))){
             elements[editing_index].hint = buffer;
          }
-      }
-      if (dragging && ImGui::IsMouseDown(0)) {
-         ImVec2 mouse = ImGui::GetMousePos();
-         ImVec2 new_pos = ImVec2(mouse.x - canvas_pos.x, mouse.y - canvas_pos.y);
-         elements[editing_index].pos = new_pos;
-      }
-      if (ImGui::IsMouseReleased(0) && dragging){
-         dragging = 0;
-         is_moving = false;
       }
       if (ImGui::Button("OK")){
          if (*id_buffer == 0) { elements[editing_index].id = "my_id"; }

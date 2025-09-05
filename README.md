@@ -44,7 +44,6 @@ sh run.sh
 
 
 ## TODO
-- [ ] fix frame layout (add proper alignment and searlize it too)
 - [ ] fix relative layout 
     - [ ] add linkages 
     - [ ] add proper stacking 
