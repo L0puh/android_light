@@ -1,7 +1,3 @@
-
-
-
-
 # LIGHT ANDROID
 
 ## Overview
@@ -45,6 +41,30 @@ sh run.sh
 ## Preview
 <img width="887"  alt="image" src="https://github.com/user-attachments/assets/c8579eff-950b-48a9-b00b-f3304e7cc376" />
 <img width="805" height="348" alt="image2" src="https://github.com/user-attachments/assets/e46e003d-b12b-4a28-93cd-f584be908c9b" />
+
+
+## TODO
+- [ ] fix frame layout (add proper alignment and searlize it too)
+- [ ] fix relative layout 
+    - [ ] add linkages 
+    - [ ] add proper stacking 
+    - [ ] fix to widget to "connect"
+- [ ] styling properties 
+    - [ ] add icons, images 
+- [ ] more widgets 
+    - [ ] `ImageView`
+    - [ ] `ImageButton`
+    - [ ] `CheckBox`
+    - [ ] `RadioButton`
+    - [ ] `ProgressBar`
+    - [ ] `Switch`
+    - [ ] `VideoView`
+    - [ ] `ListView`
+- [ ] add themes 
+- [ ] add custom attributes (ability to add your own's)
+- [ ] docker container
+- [ ] tests...
+
 
 ##  License
 

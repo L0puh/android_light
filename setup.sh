@@ -16,7 +16,7 @@ PLATFORM="$SDK/platforms/android-$VERSION"
 SRC=$PWD/$PROJECT_NAME/jni
 DOMAIN=$DOMAIN
 PROJECT_NAME=$PROJECT_NAME
-   """ >> config.sh
+   """ >> params.sh
    echo -e "${YELLOW} copying template files to $MYAPP... ${NC}\n"
 
    mkdir -p $PWD/myapp/build/{gen,obj,apk/lib/$NATIVE_LIB_PLATFORM}

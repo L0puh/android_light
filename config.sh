@@ -1,3 +1,5 @@
+touch params.sh
+source ./params.sh
 
 RELEASE=11
 NATIVE_LIB_PLATFORM="arm64-v8a"
