@@ -9,6 +9,15 @@
 }
 
 
+bool Editor::is_hovered(ImVec2 mouse_pos, ImVec2 element_pos, ImVec2 end_pos){
+   const float epsilon = 20.0f;
+   if (std::abs(element_pos.x - mouse_pos.x) < epsilon && std::abs(element_pos.y - mouse_pos.y) < epsilon)
+      return 1;
+   //FIXME: better collision with the box (end_pos) + size
+   return 0;
+}
+
+
 void Editor::save_file(std::string& filename){
    std::ofstream ofs(filename);
    if (ofs.is_open())

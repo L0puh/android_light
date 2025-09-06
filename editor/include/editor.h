@@ -190,6 +190,10 @@ class Editor {
       void update_relative(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       void update_frame(element_t el, ImVec2 *current_pos, ImVec2 *rect_end, ImVec2* pos);
       element_t find_widget_by_id(std::string);
+
+   private:
+      /* UI */ 
+      bool is_hovered(ImVec2 mouse_pos, ImVec2 element_pos, ImVec2 end_pos);
 };
 
 

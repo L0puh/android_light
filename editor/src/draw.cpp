@@ -259,8 +259,22 @@ void Editor::draw_elements(){
       if (ImGui::IsMouseClicked(0) && is_mouse_over && editing_index == -1) {
          editing_index = indx;
       }
+      
+      printf("MOUSE: %.3f %.3f\n", mouse_pos.x, mouse_pos.y);
+      printf("REL MOUSE: %.3f %.3f\n", relative_mouse_pos.x, relative_mouse_pos.y);
+      printf("EL: %.3f %.3f\n\n", el.pos.x, el.pos.y);
+      if(is_hovered(mouse_pos, pos, rect_end)){
+         utils::log_info(INFO, "1] current element type: %s\n", el.type.c_str());
+      }
+      if(is_hovered(relative_mouse_pos, pos, rect_end)){
+         utils::log_info(INFO, "2] current element type: %s\n", el.type.c_str());
+      }
+
       indx++;
    }
+   
+
+
 }
 
 
