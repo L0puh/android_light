@@ -9,12 +9,8 @@
 }
 
 
-bool Editor::is_hovered(ImVec2 mouse_pos, ImVec2 element_pos, ImVec2 end_pos){
-   const float epsilon = 20.0f;
-   if (std::abs(element_pos.x - mouse_pos.x) < epsilon && std::abs(element_pos.y - mouse_pos.y) < epsilon)
-      return 1;
-   //FIXME: better collision with the box (end_pos) + size
-   return 0;
+bool Editor::is_hovered(ImVec2 p, ImVec2 top_left, ImVec2 bottom_right){
+   return (p.x >= top_left.x && p.x <= bottom_right.x) && (p.y >= top_left.y && p.y <= bottom_right.y);
 }
 
 
