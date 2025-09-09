@@ -250,6 +250,7 @@ void Editor::draw_elements(){
    for (auto& el : elements) {
       ImVec2 rect_end, pos;
       update_element(el, &current_pos, &rect_end, &pos);
+      el.pos = pos;
       el.rect_end = rect_end;
       draw_based_on_type(draw_list, el, pos, rect_end);
 
@@ -260,9 +261,6 @@ void Editor::draw_elements(){
          editing_index = indx;
       }
       
-      if(is_hovered(relative_mouse_pos, pos, rect_end)){
-         utils::log_info(INFO, "2] current element type: %s\n", el.type.c_str());
-      } 
 
       indx++;
    }

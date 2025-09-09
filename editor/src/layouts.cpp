@@ -2,6 +2,10 @@
 #include "imgui.h"
 #include <string>
 
+void print_attributes_relative(std::string cur_option, const relative_attr_t& attr);
+void set_attr_option(std::string cur_option, std::string chosen_id, relative_attr_t* attr);
+
+
 void Editor::edit_item_frame_layout(){
 }
 void Editor::edit_item_contraint_layout(){
@@ -18,6 +22,9 @@ void Editor::edit_item_relative_layout(){
    static char start_to[256] = "";
 
    if (editing_index != -1){
+      ImVec2 mouse_pos = ImGui::GetMousePos(); 
+      ImVec2 window_pos = ImGui::GetWindowPos(); 
+      ImVec2 relative_mouse_pos = ImVec2(mouse_pos.x - window_pos.x, mouse_pos.y - window_pos.y);
 
       relative_attr_t attr = elements[editing_index].attr.relative;
       ImGui::RadioButton("align parent top", &align, 0);
@@ -33,27 +40,31 @@ void Editor::edit_item_relative_layout(){
       if (align == 1) attr.align_parent_left = 1;
       if (align == 2) attr.align_parent_right = 1;
       if (align == 3) attr.align_parent_bottom = 1;
-
-      if (ImGui::InputText("id below", below, IM_ARRAYSIZE(below))){
-         attr.layout_below = below;
-      }
-      if (ImGui::InputText("id above", above, IM_ARRAYSIZE(above))){
-         attr.layout_above = above;
-      }
-      if (ImGui::InputText("id to left of", left_to, IM_ARRAYSIZE(left_to))){
-         attr.to_left_of = left_to;
-      }
-      if (ImGui::InputText("id to right of", right_to, IM_ARRAYSIZE(right_to))){
-         attr.to_right_of = right_to;
-      }
-      if (ImGui::InputText("id to end of", end_to, IM_ARRAYSIZE(end_to))){
-         attr.to_end_of = end_to;
-      }
-      if (ImGui::InputText("id to start of", start_to, IM_ARRAYSIZE(start_to))){
-         attr.to_start_of = start_to;
-      }
       
-      elements[editing_index].attr.relative = attr;
+      std::string options[] = { "id below", "id above", "id left of", "id right of", "id end of", "id start of"};
+      static std::string chosen_id = "";
+      static std::string cur_option = "";
+      for (const std::string& o: options){
+         if (ImGui::Button(o.c_str())){
+            cur_option = o;
+         }
+         print_attributes_relative(o, attr);
+      }
+      if (cur_option == "") return; 
+      else ImGui::Text("Click to an object to get id");
+      for (int indx = 0; indx < elements.size(); indx++){
+         element_t el = elements[indx];
+         if(is_hovered(relative_mouse_pos, el.pos, el.rect_end) &&
+                           layout_settings.type == relative_layout && editing_index !=- 1
+                           && ImGui::IsMouseClicked(0) && editing_index != indx)
+         {
+            chosen_id = el.id;
+         } 
+      }
+      if (cur_option != "" && chosen_id != ""){
+         set_attr_option(cur_option, chosen_id, &attr);
+         elements[editing_index].attr.relative = attr;
+      }
    }
 
 }
@@ -106,4 +117,50 @@ void Editor::edit_window_layout(){
    
    this->layout_settings = layout;
 
+}
+void print_attributes_relative(std::string cur_option, const relative_attr_t& attr){
+   if (cur_option == "id below"){
+      ImGui::Text("%s", attr.layout_below.c_str());
+      return;
+   }
+   if (cur_option == "id above"){
+      ImGui::Text("%s", attr.layout_above.c_str());
+      return;
+   }
+   if (cur_option == "id left of"){
+      ImGui::Text("%s", attr.to_left_of.c_str());
+      return;
+   }
+   if (cur_option == "id right_of"){
+      ImGui::Text("%s", attr.to_right_of.c_str());
+      return;
+   }
+   if (cur_option == "id end of"){
+      ImGui::Text("%s", attr.to_end_of.c_str());
+      return;
+   }
+   if (cur_option == "id start of"){
+      ImGui::Text("%s", attr.to_start_of.c_str());
+      return;
+   }
+}
+void set_attr_option(std::string cur_option, std::string chosen_id, relative_attr_t* attr){
+   if (cur_option == "id below"){
+      attr->layout_below = chosen_id;
+   }
+   if (cur_option == "id above"){
+      attr->layout_above= chosen_id;
+   }
+   if (cur_option == "id left of"){
+      attr->to_left_of= chosen_id;
+   }
+   if (cur_option == "id right_of"){
+      attr->to_right_of = chosen_id;
+   }
+   if (cur_option == "id end of"){
+      attr->to_end_of = chosen_id;
+   }
+   if (cur_option == "id start of"){
+      attr->to_start_of = chosen_id;
+   }
 }
